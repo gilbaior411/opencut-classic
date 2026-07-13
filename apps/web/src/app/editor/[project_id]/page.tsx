@@ -35,12 +35,24 @@ import {
 	getBookmarkPreviewOverlaySource,
 } from "@/timeline/bookmarks/index";
 import { EditorCore } from "@/core";
+import { TICKS_PER_SECOND, mediaTime, mediaTimeFromSeconds, roundMediaTime } from "@/wasm";
 
 // dev-only global exposure for MCP / Playwright automation.
 // Access via `window.__editor` in DevTools or via Playwright `browser_evaluate`.
+// `__opencut` exposes wasm time helpers so external callers can construct
+// MediaTime values from seconds without importing the wasm module.
 if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
-	(window as unknown as { __editor: EditorCore }).__editor =
-		EditorCore.getInstance();
+	const w = window as unknown as {
+		__editor: EditorCore;
+		__opencut: {
+			TICKS_PER_SECOND: number;
+			mediaTime: typeof mediaTime;
+			mediaTimeFromSeconds: typeof mediaTimeFromSeconds;
+			roundMediaTime: typeof roundMediaTime;
+		};
+	};
+	w.__editor = EditorCore.getInstance();
+	w.__opencut = { TICKS_PER_SECOND, mediaTime, mediaTimeFromSeconds, roundMediaTime };
 }
 
 export default function Editor() {
