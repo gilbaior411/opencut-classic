@@ -34,6 +34,14 @@ import {
 	bookmarkNotesPreviewOverlay,
 	getBookmarkPreviewOverlaySource,
 } from "@/timeline/bookmarks/index";
+import { EditorCore } from "@/core";
+
+// dev-only global exposure for MCP / Playwright automation.
+// Access via `window.__editor` in DevTools or via Playwright `browser_evaluate`.
+if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+	(window as unknown as { __editor: EditorCore }).__editor =
+		EditorCore.getInstance();
+}
 
 export default function Editor() {
 	const params = useParams();

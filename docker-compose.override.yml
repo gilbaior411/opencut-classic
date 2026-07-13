@@ -1,0 +1,6 @@
+# fork の全マシン共通 override。
+# host からは serverless-redis-http (8079) 経由でしか redis に触らないので、
+# redis 自体のホストポート公開は不要 (WSL2 等で 6379 が別 container に取られていても回避できる)。
+services:
+  redis:
+    ports: !override []

@@ -26,3 +26,6 @@ target/
 .cargo-tools/
 
 rust-migration-notes.md
+# machine-local docker compose extensions (iris-pc, etc)
+docker-compose.iris.yml
+docker-compose.local.yml
