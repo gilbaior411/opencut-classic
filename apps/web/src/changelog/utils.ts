@@ -1,7 +1,18 @@
-import { allChangelogs } from "content-collections";
-
 export type Change = { type: string; text: string };
-export type Release = (typeof allChangelogs)[number];
+export type Release = {
+	content?: string;
+	version: string;
+	date: string;
+	published?: boolean;
+	title: string;
+	description?: string;
+	summary?: string;
+	changes: Change[];
+	isLatest?: boolean;
+};
+
+// The local automation copy does not need remote changelog data.
+const allChangelogs: Release[] = [];
 
 type ChangeSectionConfig = {
 	title: string;

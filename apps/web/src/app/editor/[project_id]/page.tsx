@@ -36,6 +36,8 @@ import {
 } from "@/timeline/bookmarks/index";
 import { EditorCore } from "@/core";
 import { TICKS_PER_SECOND, mediaTime, mediaTimeFromSeconds, roundMediaTime } from "@/wasm";
+import { DEFAULTS } from "@/timeline/defaults";
+import { buildTextElement } from "@/timeline/element-utils";
 
 // dev-only global exposure for MCP / Playwright automation.
 // Access via `window.__editor` in DevTools or via Playwright `browser_evaluate`.
@@ -49,10 +51,48 @@ if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
 			mediaTime: typeof mediaTime;
 			mediaTimeFromSeconds: typeof mediaTimeFromSeconds;
 			roundMediaTime: typeof roundMediaTime;
+			createTextElement: (args: {
+				content: string;
+				startTimeSeconds: number;
+				durationSeconds: number;
+				name?: string;
+				fontSize?: number;
+				fontFamily?: string;
+				color?: string;
+			}) => ReturnType<typeof buildTextElement>;
 		};
 	};
 	w.__editor = EditorCore.getInstance();
-	w.__opencut = { TICKS_PER_SECOND, mediaTime, mediaTimeFromSeconds, roundMediaTime };
+	w.__opencut = {
+		TICKS_PER_SECOND,
+		mediaTime,
+		mediaTimeFromSeconds,
+		roundMediaTime,
+		createTextElement: ({
+			content,
+			startTimeSeconds,
+			durationSeconds,
+			name,
+			fontSize,
+			fontFamily,
+			color,
+		}) =>
+			buildTextElement({
+				raw: {
+					...DEFAULTS.text.element,
+					name: name ?? content.slice(0, 32),
+					duration: mediaTimeFromSeconds({ seconds: durationSeconds }),
+					params: {
+						...DEFAULTS.text.element.params,
+						content,
+						...(fontSize === undefined ? {} : { fontSize }),
+						...(fontFamily === undefined ? {} : { fontFamily }),
+						...(color === undefined ? {} : { color }),
+					},
+				},
+				startTime: mediaTimeFromSeconds({ seconds: startTimeSeconds }),
+			}),
+	};
 }
 
 export default function Editor() {
